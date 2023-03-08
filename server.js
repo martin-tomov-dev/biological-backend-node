@@ -1,16 +1,30 @@
-const http = require("http");
+const express = require("express");
+// const bodyParser = require("body-parser"); /* deprecated */
+const cors = require("cors");
 
-const events = require("events");
+const app = express();
 
-const hostname = "127.0.0.1";
-const port = 8000;
+app.use(cors({ origin: true, credentials: true }));
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "text/plain");
-  res.end("Hello World");
+// parse requests of content-type - application/json
+app.use(express.json()); /* bodyParser.json() is deprecated */
+
+// parse requests of content-type - application/x-www-form-urlencoded
+app.use(
+  express.urlencoded({ extended: true })
+); /* bodyParser.urlencoded() is deprecated */
+
+// routes
+const user = require("./api/routes/user.routes");
+
+// simple route
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to biological report application." });
 });
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+app.use("/api/users", user);
+// set port, listen for requests
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
